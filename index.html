@@ -23,7 +23,6 @@
             filter: brightness(0.8);
             transition: transform 0.1s;
         }
-        /* 안드로이드 앱 아이콘 특유의 스쿼클(Squircle) 모양 적용 */
         .squircle {
             border-radius: 20px;
         }
@@ -44,20 +43,19 @@
             }, []);
 
             return (
-                /* 1. 휴대폰 기기 외관 (갤럭시 스타일의 곡률 적용) */
                 <div className="relative w-[375px] h-[812px] bg-gray-900 rounded-[45px] shadow-2xl p-[6px] border-2 border-gray-600">
                     
-                    /* 측면 물리 버튼 (갤럭시는 주로 오른쪽에 볼륨과 전원 버튼이 있음) */
+                    {/* 측면 물리 버튼 */}
                     <div className="absolute top-[140px] -right-[4px] w-[4px] h-[100px] bg-gray-700 rounded-r-md"></div>
                     <div className="absolute top-[260px] -right-[4px] w-[4px] h-[50px] bg-gray-700 rounded-r-md"></div>
 
-                    /* 2. 실제 화면 영역 */
+                    {/* 실제 화면 영역 */}
                     <div className="relative w-full h-full bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-300 rounded-[38px] overflow-hidden flex flex-col">
                         
-                        /* 상단 펀치홀 카메라 (화면 한가운데 작은 구멍) */
+                        {/* 상단 펀치홀 카메라 */}
                         <div className="absolute top-[12px] left-1/2 transform -translate-x-1/2 w-[16px] h-[16px] bg-black rounded-full z-50 shadow-inner"></div>
 
-                        {/* 상단 상태바 (갤럭시는 보통 시간이 왼쪽에 있음) */}
+                        {/* 상단 상태바 */}
                         <div className="absolute top-0 w-full flex justify-between items-center px-6 pt-3 text-white font-bold text-[13px] z-40">
                             <span>{time}</span>
                             <div className="flex gap-2 items-center">
@@ -67,9 +65,8 @@
                             </div>
                         </div>
 
-                        {/* 3. 어플 아이콘 영역 */}
+                        {/* 어플 아이콘 영역 */}
                         <div className="pt-20 px-6 grid grid-cols-4 gap-y-8 gap-x-4 flex-1">
-                            
                             <a href="jinuquiz.html" className="flex flex-col items-center gap-1 no-underline">
                                 <div className="app-icon w-[60px] h-[60px] bg-amber-100 squircle shadow-md flex items-center justify-center text-3xl">🍼</div>
                                 <span className="text-white text-[12px] font-medium drop-shadow-md">진우 퀴즈</span>
@@ -86,7 +83,7 @@
                             </div>
                         </div>
 
-                        {/* 4. 하단 독(Dock) 영역 (둥근 사각형) */}
+                        {/* 하단 독(Dock) 영역 */}
                         <div className="w-[92%] mx-auto bg-white/20 backdrop-blur-xl rounded-3xl p-3 flex justify-around items-center shadow-lg mb-4 z-40">
                             <div className="w-[56px] h-[56px] bg-green-500 rounded-full shadow-inner flex items-center justify-center text-[28px]">📞</div>
                             <div className="w-[56px] h-[56px] bg-white rounded-full shadow-inner flex items-center justify-center text-[28px] font-bold text-blue-500">G</div>
@@ -94,26 +91,9 @@
                             <div className="w-[56px] h-[56px] bg-pink-500 rounded-full shadow-inner flex items-center justify-center text-[28px]">📸</div>
                         </div>
 
-                        {/* 5. 안드로이드 하단 3버튼 내비게이션 바 */}
+                        {/* 안드로이드 하단 3버튼 내비게이션 바 */}
                         <div className="h-[48px] w-full flex justify-around items-center px-10 pb-2 z-50">
-                            {/* 최근 앱 버튼 (세 줄) */}
                             <div className="flex flex-col gap-[3px] opacity-70">
                                 <div className="w-[18px] h-[2px] bg-white"></div>
                                 <div className="w-[18px] h-[2px] bg-white"></div>
-                                <div className="w-[18px] h-[2px] bg-white"></div>
-                            </div>
-                            {/* 홈 버튼 (둥근 사각형) */}
-                            <div className="w-[16px] h-[16px] border-[2px] border-white rounded-[4px] opacity-70"></div>
-                            {/* 뒤로 가기 버튼 (꺾쇠) */}
-                            <div className="w-[14px] h-[14px] border-t-[2px] border-r-[2px] border-white transform -rotate-135 opacity-70"></div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+                                <div className="w-
