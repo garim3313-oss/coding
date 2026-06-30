@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 어플 컬렉션</title>
+    <!-- React 및 Tailwind CSS 로드 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        function App() {
+            return (
+                <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl overflow-hidden flex flex-col">
+                    {/* 상단 헤더 영역 */}
+                    <div className="bg-slate-800 text-white p-8 rounded-b-3xl shadow-lg text-center">
+                        <h1 className="text-3xl font-black mb-2 tracking-tight">나만의 어플 모음</h1>
+                        <p className="text-slate-300 font-medium">원하시는 어플을 선택해주세요!</p>
+                    </div>
+
+                    {/* 어플 버튼 목록 영역 */}
+                    <div className="flex-1 p-6 flex flex-col gap-6 mt-2">
+                        
+                        {/* 1. 진우 퀴즈 어플 버튼 */}
+                        <a 
+                            href="여기에_진우퀴즈_깃허브_주소를_넣으세요" 
+                            className="block bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 shadow-sm hover:shadow-md active:scale-95 transition-transform duration-200 text-center"
+                            style={{ textDecoration: 'none' }}
+                        >
+                            <div className="text-6xl mb-4 drop-shadow-sm">🍼</div>
+                            <h2 className="text-2xl font-bold text-amber-700 mb-2">진우 나이 맞히기</h2>
+                            <p className="text-amber-600 font-medium">이 진우는 생후 몇 일일까요?</p>
+                        </a>
+
+                        {/* 2. 리밸런싱 계산기 어플 버튼 */}
+                        <a 
+                            href="여기에_리밸런싱계산기_깃허브_주소를_넣으세요" 
+                            className="block bg-blue-50 border-2 border-blue-200 rounded-3xl p-6 shadow-sm hover:shadow-md active:scale-95 transition-transform duration-200 text-center"
+                            style={{ textDecoration: 'none' }}
+                        >
+                            <div className="text-6xl mb-4 drop-shadow-sm">⚖️</div>
+                            <h2 className="text-2xl font-bold text-blue-700 mb-2">리밸런싱 계산기</h2>
+                            <p className="text-blue-600 font-medium">포트폴리오 비중을 완벽하게!</p>
+                        </a>
+
+                        {/* 나중에 어플 추가하실 때 위 <a> 태그 블록을 복사해서 밑에 붙여넣기만 하시면 됩니다 */}
+                    </div>
+                    
+                    {/* 하단 여백 */}
+                    <div className="py-8 text-center text-gray-400 text-sm font-medium">
+                        © 2026 My App Collection
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
