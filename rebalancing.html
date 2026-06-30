@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 리밸런싱 계산기 </title>
+    <style>
+        body { font-family: 'Pretendard', -apple-system, sans-serif; background-color: #f4f6f8; margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .app-container { background-color: #ffffff; width: 100%; max-width: 450px; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: #222; margin-bottom: 5px; font-size: 22px; }
+        p.subtitle { text-align: center; color: #777; font-size: 13px; margin-bottom: 20px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #0056b3; margin-top: 25px; margin-bottom: 12px; border-bottom: 2px solid #f0f2f5; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { font-size: 11px; background-color: #f1f5f9; color: #64748b; padding: 4px 8px; border-radius: 10px; font-weight: normal; }
+        .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .info-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #475569; }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-row b { color: #0f172a; }
+        .input-group { margin-bottom: 15px; }
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; color: #444; font-size: 13px; }
+        input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; background-color: #fff; transition: border-color 0.2s; }
+        input:focus { border-color: #0056b3; outline: none; }
+        button { width: 100%; padding: 16px; background-color: #0056b3; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background-color 0.2s; }
+        button:hover { background-color: #004494; }
+        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .result-box { margin-top: 25px; padding: 20px; background-color: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd; }
+        .buy-item { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 12px; color: #0f172a; }
+        .buy-item span { font-weight: bold; color: #dc2626; font-size: 18px; }
+        .final-stats { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #93c5fd; }
+        .stat-group { margin-bottom: 12px; }
+        .stat-label { font-size: 13px; color: #475569; margin-bottom: 4px; font-weight: bold; }
+        .stat-usd { font-size: 16px; font-weight: bold; color: #0f172a; }
+        .stat-krw { font-size: 13px; color: #64748b; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h2>📈 리밸런싱 계산기 </h2>
+    
+    <div class="section-title">
+        1. 현재가 및 환율
+        <span class="status-badge" id="updateStatus">불러오는 중...</span>
+    </div>
+    <div class="info-box" id="dataBox" style="opacity: 0.5;">
+        <div class="info-row"><span>QQQ 현재가:</span><b id="displayQqq">대기중</b></div>
+        <div class="info-row"><span>QQQM 현재가:</span><b id="displayQqqm">대기중</b></div>
+        <div class="info-row"><span>SCHD 현재가:</span><b id="displaySchd">대기중</b></div>
+        <div class="info-row"><span>적용 환율:</span><b id="displayRate">대기중</b></div>
+    </div>
+
+    <div class="section-title">2. 내 계좌 현재 상태</div>
+    <div class="row" style="margin-bottom: 15px;">
+        <div class="col">
+            <label for="qqqOwned">보유 QQQ</label>
+            <input type="number" id="qqqOwned" placeholder="0" value="133">
+        </div>
+        <div class="col">
+            <label for="qqqmOwned">보유 QQQM</label>
+            <input type="number" id="qqqmOwned" placeholder="0" value="22">
+        </div>
+        <div class="col">
+            <label for="schdOwned">보유 SCHD</label>
+            <input type="number" id="schdOwned" placeholder="0" value="1351">
+        </div>
+    </div>
+
+    <div class="section-title">3. 이번 달 매수 설정</div>
+    <div class="input-group">
+        <label for="totalBudget">추가 매수할 달러 ($)</label>
+        <input type="number" id="totalBudget" placeholder="예: 1000">
+    </div>
+
+    <button id="calcBtn" onclick="calculateRebalance()" disabled>최적 매수 수량 계산</button>
+
+    <div class="result-box" id="resultBox" style="display: none;">
+        <div class="buy-item">🛒 <b>QQQM 매수:</b> <span id="qqqmBuy">0 주</span></div>
+        <div class="buy-item">🛒 <b>SCHD 매수:</b> <span id="schdBuy">0 주</span></div>
+        <div class="buy-item" style="font-size:14px; color:#0369a1;">💵 <b>남은 달러:</b> <span style="color:#0369a1;" id="remainingCash">0 $</span></div>
+        
+        <div class="final-stats">
+            <div style="font-weight: bold; color: #0f172a; margin-bottom: 15px; font-size: 14px;">📊 매수 후 예상 포트폴리오 총액</div>
+            
+            <div class="stat-group">
+                <div class="stat-label">🟢 성장주 (QQQ + QQQM)</div>
+                <div class="stat-usd" id="finalGrowthUsd">$0.00</div>
+                <div class="stat-krw" id="finalGrowthKrw">₩ 0</div>
+            </div>
+            
+            <div class="stat-group">
+                <div class="stat-label">🔵 배당주 (SCHD)</div>
+                <div class="stat-usd" id="finalDivUsd">$0.00</div>
+                <div class="stat-krw" id="finalDivKrw">₩ 0</div>
+            </div>
+            
+            <div style="margin-top: 15px; border-top: 1px solid #bae6fd; padding-top: 10px; display: flex; justify-content: space-between; font-weight: bold; color: #0369a1; font-size: 14px;">
+                <span>총 자산 </span>
+                <div style="text-align: right;">
+                    <div id="finalTotalUsd">$0.00</div>
+                    <div id="finalTotalKrw" style="font-size: 14px; color: #64748b; margin-top: 3px;">0원</div>
+               </div>
+            </div>
+            <div style="padding-top: 5px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #0369a1; font-size: 13px;">
+                <span>최종 비율 (성장 : 배당)</span>
+                <span id="finalRatio">0% : 0%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 형님의 구글 시트 링크 (다이렉트 연결)
+    const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQl3BpFtBNCaUOJ7STB2s5LBI8YFd23l2AHY2h4V9GamkZ-7UHHvmdQTkpAM2_eVvjp0p5Ku-OsPui-/pub?output=csv"; 
+    
+    // 글로벌 변수로 시장 데이터 저장
+    let marketData = {};
+
+    window.onload = async function() {
+        try {
+            const response = await fetch(GOOGLE_SHEET_CSV_URL);
+            if (!response.ok) throw new Error("구글 시트 접속에 실패했습니다.");
+            
+            const data = await response.text();
+            if (data.includes("<!DOCTYPE html>")) throw new Error("웹에 게시가 안 되었습니다.");
+            
+            let cleanData = data.replace(/"([^"]*)"/g, function(match, p1) {
+                return p1.replace(/,/g, ''); 
+            });
+            
+            const rows = cleanData.split('\n').map(row => row.split(','));
+            const validRows = rows.filter(row => row.length >= 2 && row[1].trim() !== '');
+
+            // 주가 데이터 4줄이 필요합니다.
+            if (validRows.length < 4) {
+                throw new Error("시트의 주가 데이터가 부족합니다.");
+            }
+
+            // 시트에서 현재가 및 환율 추출
+            marketData = {
+                qqqPrice: parseFloat(validRows[0][1]) || 0,
+                qqqmPrice: parseFloat(validRows[1][1]) || 0,
+                schdPrice: parseFloat(validRows[2][1]) || 0,
+                exchangeRate: parseFloat(validRows[3][1]) || 0
+            };
+
+            if (marketData.exchangeRate === 0) {
+                throw new Error("불러오기 실패!");
+            };
+            
+            // 화면에 가져온 주가 보여주기
+            document.getElementById('displayRate').innerText = marketData.exchangeRate.toLocaleString('ko-KR') + '원';
+            document.getElementById('displayQqq').innerText = '$ ' + marketData.qqqPrice;
+            document.getElementById('displayQqqm').innerText = '$ ' + marketData.qqqmPrice;
+            document.getElementById('displaySchd').innerText = '$ ' + marketData.schdPrice;
+
+            // 상태 업데이트 및 계산 버튼 활성화
+            document.getElementById('updateStatus').innerText = '불러오기 완료!';
+            document.getElementById('updateStatus').style.backgroundColor = '#dcfce7';
+            document.getElementById('updateStatus').style.color = '#166534';
+            document.getElementById('dataBox').style.opacity = '1';
+            document.getElementById('calcBtn').disabled = false;
+            
+        } catch (error) {
+            console.error("데이터 로드 실패", error);
+            document.getElementById('updateStatus').innerText = '오류: ' + error.message;
+            document.getElementById('updateStatus').style.backgroundColor = '#fee2e2';
+            document.getElementById('updateStatus').style.color = '#991b1b';
+        }
+    };
+
+    function calculateRebalance() {
+        // 직접 입력한 보유 수량 가져오기
+        const qqqO = parseFloat(document.getElementById('qqqOwned').value) || 0;
+        const qqqmO = parseFloat(document.getElementById('qqqmOwned').value) || 0;
+        const schdO = parseFloat(document.getElementById('schdOwned').value) || 0;
+        const budget = parseFloat(document.getElementById('totalBudget').value) || 0;
+        
+        if (budget <= 0) {
+            alert("이번 달 추가로 투자하실 금액을 입력하세요");
+            return;
+        }
+
+        // 현재 평가액
+        const currentGrowthValue = (qqqO * marketData.qqqPrice) + (qqqmO * marketData.qqqmPrice);
+        const currentDividendValue = (schdO * marketData.schdPrice);
+        const totalTargetWealth = currentGrowthValue + currentDividendValue + budget;
+
+        // 7:3 목표 금액
+        const targetGrowthValue = totalTargetWealth * 0.7;
+        const targetDividendValue = totalTargetWealth * 0.3;
+
+        // 추가로 필요한 금액
+        let growthNeed = Math.max(0, targetGrowthValue - currentGrowthValue);
+        let dividendNeed = Math.max(0, targetDividendValue - currentDividendValue);
+
+        // 예산이 부족할 경우 비율 조정
+        const totalNeed = growthNeed + dividendNeed;
+        if (totalNeed > budget && totalNeed > 0) {
+            growthNeed = budget * (growthNeed / totalNeed);
+            dividendNeed = budget * (dividendNeed / totalNeed);
+        }
+
+        // QQQM, SCHD 매수 주수 (소수점 버림)
+        const qqqmBuyShares = Math.floor(growthNeed / marketData.qqqmPrice);
+        const schdBuyShares = Math.floor(dividendNeed / marketData.schdPrice);
+
+        // 남은 잔액
+        const totalSpent = (qqqmBuyShares * marketData.qqqmPrice) + (schdBuyShares * marketData.schdPrice);
+        const remaining = (budget - totalSpent).toFixed(2);
+
+        // [핵심] 매수 후 예상 포트폴리오 (달러 & 원화)
+        const finalGrowthUsd = currentGrowthValue + (qqqmBuyShares * marketData.qqqmPrice);
+        const finalGrowthKrw = finalGrowthUsd * marketData.exchangeRate;
+
+        const finalDivUsd = currentDividendValue + (schdBuyShares * marketData.schdPrice);
+        const finalDivKrw = finalDivUsd * marketData.exchangeRate;
+        
+        const finalTotal = finalGrowthUsd + finalDivUsd;
+        const finalGrowthRatio = finalTotal > 0 ? ((finalGrowthUsd / finalTotal) * 100).toFixed(1) : 0;
+        const finalDividendRatio = finalTotal > 0 ? ((finalDivUsd / finalTotal) * 100).toFixed(1) : 0;
+
+        // 화면에 결과 출력
+        document.getElementById('qqqmBuy').innerText = qqqmBuyShares + ' 주';
+        document.getElementById('schdBuy').innerText = schdBuyShares + ' 주';
+        document.getElementById('remainingCash').innerText = remaining + ' $';
+        
+        // 달러 표시 (소수점 2자리)
+        document.getElementById('finalGrowthUsd').innerText = '$ ' + finalGrowthUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('finalDivUsd').innerText = '$ ' + finalDivUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        
+        // 원화 표시 (정수 콤마)
+        document.getElementById('finalGrowthKrw').innerText = finalGrowthKrw.toLocaleString('ko-KR', {maximumFractionDigits: 0}) + '원';
+        document.getElementById('finalDivKrw').innerText = finalDivKrw.toLocaleString('ko-KR', {maximumFractionDigits: 0}) + '원';
+        
+        const finalTotalKrw = finalGrowthKrw + finalDivKrw;
+        document.getElementById('finalTotalUsd').innerText = '$ ' + finalTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('finalTotalKrw').innerText = finalTotalKrw.toLocaleString('ko-KR', {maximumFractionDigits: 0}) + '원';
+        
+        document.getElementById('finalRatio').innerText = finalGrowthRatio + '% : ' + finalDividendRatio + '%';
+
+        document.getElementById('resultBox').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
