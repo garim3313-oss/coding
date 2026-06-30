@@ -26,9 +26,9 @@
         .squircle {
             border-radius: 20px;
         }
-        /* 삼성 갤럭시 순정 느낌의 3D 추상화 배경 이미지 */
-        .galaxy-official-bg {
-            background-image: url('https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+        /* 삼성 갤럭시 울트라 모델 느낌의 고급스러운 신비로운 우주 성운 배경 */
+        .galaxy-nebula-bg {
+            background-image: url('https://images.unsplash.com/photo-1538370965046-79c0d6907d47?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
             background-size: cover;
             background-position: center;
         }
@@ -55,14 +55,14 @@
                     <div className="absolute top-[140px] -right-[4px] w-[4px] h-[100px] bg-gray-700 rounded-r-md"></div>
                     <div className="absolute top-[260px] -right-[4px] w-[4px] h-[50px] bg-gray-700 rounded-r-md"></div>
 
-                    {/* 실제 화면 영역 (순정 배경 적용) */}
-                    <div className="relative w-full h-full galaxy-official-bg rounded-[38px] overflow-hidden flex flex-col">
+                    {/* 실제 화면 영역 (프리미엄 성운 배경 적용) */}
+                    <div className="relative w-full h-full galaxy-nebula-bg rounded-[38px] overflow-hidden flex flex-col">
                         
-                        {/* 배경을 살짝 어둡게 눌러줘서 어플과 글씨가 잘 보이게 함 */}
-                        <div className="absolute inset-0 bg-black/10 z-0"></div>
+                        {/* 배경이 화려하므로 어플이 잘 보이도록 살짝 톤다운 */}
+                        <div className="absolute inset-0 bg-black/20 z-0"></div>
 
                         {/* 상단 펀치홀 카메라 */}
-                        <div className="absolute top-[12px] left-1/2 transform -translate-x-1/2 w-[16px] h-[16px] bg-black rounded-full z-50 shadow-[inset_0_-2px_4px_rgba(255,255,255,0.2)] border border-gray-800"></div>
+                        <div className="absolute top-[12px] left-1/2 transform -translate-x-1/2 w-[16px] h-[16px] bg-black rounded-full z-50 shadow-[inset_0_-2px_4px_rgba(255,255,255,0.3)] border border-gray-800"></div>
 
                         {/* 상단 상태바 */}
                         <div className="absolute top-0 w-full flex justify-between items-center px-6 pt-3 text-white font-bold text-[13px] z-40 drop-shadow-md">
@@ -77,23 +77,23 @@
                         {/* 어플 아이콘 영역 */}
                         <div className="pt-20 px-6 grid grid-cols-4 gap-y-8 gap-x-4 flex-1 z-10">
                             <a href="jinuquiz.html" className="flex flex-col items-center gap-1 no-underline">
-                                <div className="app-icon w-[60px] h-[60px] bg-amber-50/95 backdrop-blur-sm squircle shadow-lg flex items-center justify-center text-3xl border border-white/40">🍼</div>
+                                <div className="app-icon w-[60px] h-[60px] bg-amber-50/95 backdrop-blur-sm squircle shadow-lg flex items-center justify-center text-3xl border border-white/30">🍼</div>
                                 <span className="text-white text-[12px] font-medium drop-shadow-lg" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.9)' }}>진우 퀴즈</span>
                             </a>
                             
                             <a href="rebalancing.html" className="flex flex-col items-center gap-1 no-underline">
-                                <div className="app-icon w-[60px] h-[60px] bg-blue-500/95 backdrop-blur-sm squircle shadow-lg flex items-center justify-center text-3xl border border-white/40 border-b-4 border-blue-700">⚖️</div>
-                                <span className="text-white text-[12px] font-medium drop-shadow-lg" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.9)' }}>리밸런싱계산기</span>
+                                <div className="app-icon w-[60px] h-[60px] bg-blue-500/95 backdrop-blur-sm squircle shadow-lg flex items-center justify-center text-3xl border border-white/30 border-b-4 border-blue-700">⚖️</div>
+                                <span className="text-white text-[12px] font-medium drop-shadow-lg" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.9)' }}>리밸런싱 계산기</span>
                             </a>
 
                             <div className="flex flex-col items-center gap-1 opacity-70">
-                                <div className="w-[60px] h-[60px] bg-white/20 backdrop-blur-md squircle flex items-center justify-center text-3xl shadow-lg border border-white/30">➕</div>
+                                <div className="w-[60px] h-[60px] bg-white/10 backdrop-blur-md squircle flex items-center justify-center text-3xl shadow-lg border border-white/20">➕</div>
                                 <span className="text-white/90 text-[12px]" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.9)' }}>추가 예정</span>
                             </div>
                         </div>
 
                         {/* 하단 독(Dock) 영역 */}
-                        <div className="w-[92%] mx-auto bg-black/20 backdrop-blur-xl rounded-3xl p-3 flex justify-around items-center shadow-2xl mb-4 z-40 border border-white/20">
+                        <div className="w-[92%] mx-auto bg-black/30 backdrop-blur-xl rounded-3xl p-3 flex justify-around items-center shadow-2xl mb-4 z-40 border border-white/10">
                             <div className="w-[56px] h-[56px] bg-green-500 rounded-full shadow-inner flex items-center justify-center text-[28px]">📞</div>
                             <div className="w-[56px] h-[56px] bg-white rounded-full shadow-inner flex items-center justify-center text-[28px] font-bold text-blue-500">G</div>
                             <div className="w-[56px] h-[56px] bg-yellow-400 rounded-full shadow-inner flex items-center justify-center text-[28px]">💬</div>
