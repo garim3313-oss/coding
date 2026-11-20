@@ -13,30 +13,22 @@ body{margin:0;background:#f3f4f6;font-family:'Malgun Gothic','Apple SD Gothic Ne
 .top a{color:#2563eb;text-decoration:none;font-size:14px}
 h1{font-size:20px;margin:0}
 .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:14px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.full{grid-column:1/3}
 label{font-size:12px;color:#6b7280;display:block;margin-bottom:4px}
-input[type=text],input[type=number],input[type=date],textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:15px;font-family:inherit}
-textarea{resize:vertical;min-height:50px}
-.pick{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-#fname{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pick label.btn{white-space:nowrap;flex-shrink:0;margin:0;display:inline-block;padding:10px 14px;background:#111827;color:#fff;border-radius:8px;font-size:14px;cursor:pointer}
+input[type=number],input[type=date]{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:15px;font-family:inherit}
+.pick label.btn{white-space:nowrap;display:block;margin:0;padding:14px;background:#111827;color:#fff;border-radius:10px;font-size:16px;text-align:center;cursor:pointer}
 .pick input{display:none}
-#prev{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:none}
-.add{width:100%;margin-top:12px;padding:12px;background:#111827;color:#fff;border:0;border-radius:10px;font-size:16px;cursor:pointer}
-#msg{min-height:20px;margin-top:6px;font-size:13px;text-align:center}
+#st{font-size:13px;margin-top:8px;min-height:18px;text-align:center;color:#6b7280}
 .tabs{display:flex;gap:8px;margin-bottom:10px}
 .tabs button{flex:1;padding:8px;border:1px solid #d1d5db;background:#fff;border-radius:8px;font-size:14px;cursor:pointer}
 .tabs button.on{background:#111827;color:#fff;border-color:#111827}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .g{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer}
-.g .im{width:100%;aspect-ratio:1/1;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
-.g .im img{width:100%;height:100%;object-fit:cover}
+.g .im{width:100%;aspect-ratio:1/1;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden}
+.g .im img{width:100%;height:100%;object-fit:cover;object-position:top}
 .g .used{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
 .g .info{padding:8px 10px}
-.g .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.g .sub{font-size:12px;color:#6b7280;margin-top:2px}
-.dd{display:inline-block;font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;margin-top:4px}
+.g .sub{font-size:13px;color:#374151;font-weight:700}
+.dd{display:inline-block;font-size:12px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:4px}
 .ok{background:#dcfce7;color:#166534}.soon{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}.none{background:#e5e7eb;color:#374151}
 .empty{text-align:center;color:#9ca3af;padding:30px;grid-column:1/3}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
@@ -45,10 +37,12 @@ textarea{resize:vertical;min-height:50px}
 .box img{width:100%;border-radius:10px;margin-bottom:10px}
 .box h2{margin:0 0 6px;font-size:18px}
 .box p{margin:3px 0;font-size:14px;color:#374151}
+.f{margin-top:10px}
 .btns{display:flex;gap:8px;margin-top:12px}
 .btns button{flex:1;padding:11px;border-radius:8px;border:1px solid #d1d5db;background:#fff;font-size:14px;cursor:pointer}
 .btns .del{background:#ef4444;color:#fff;border-color:#ef4444}
 .btns .use{background:#2563eb;color:#fff;border-color:#2563eb}
+.btns .sv{background:#111827;color:#fff;border-color:#111827}
 </style>
 </head>
 <body>
@@ -56,151 +50,97 @@ textarea{resize:vertical;min-height:50px}
   <div class="top"><a href="index.html">← 홈</a><h1>🎁 기프티콘 보관함</h1><span style="width:40px"></span></div>
 
   <div class="card">
-    <div class="row">
-      <div class="full"><label>기프티콘 이미지</label>
-        <div class="pick"><label class="btn" for="img">이미지 선택</label><input type="file" id="img" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"><img id="prev" alt=""><span id="fname" style="font-size:12px;color:#6b7280">선택 안 함</span></div><div id="ocr" style="font-size:12px;margin-top:6px;color:#6b7280"></div></div>
-      <div class="full"><label>상품명</label><input type="text" id="name" placeholder="예: 아메리카노 T"></div>
-      <div><label>교환처 (브랜드)</label><input type="text" id="brand" placeholder="예: 스타벅스"></div>
-      <div><label>가격 (원)</label><input type="number" id="price" inputmode="numeric"></div>
-      <div class="full"><label>유효기간</label><input type="date" id="exp"></div>
-            <div class="full"><label>메모</label><textarea id="memo" placeholder="쿠폰번호, 사용 조건 등"></textarea></div>
-    </div>
-    <div id="msg"></div>
-    <button class="add" id="addBtn">등록하기</button>
+    <div class="pick"><label class="btn" for="img">＋ 이미지 선택</label><input type="file" id="img" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></div>
+    <div id="st">사진을 고르면 바로 등록돼요. 유효기간과 가격은 자동으로 읽어요.</div>
   </div>
 
   <div class="tabs"><button id="tAll" class="on">사용 가능</button><button id="tUsed">사용 완료</button></div>
   <div class="grid" id="list"></div>
-  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요. (버전 v5)</div>
+  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요. (버전 v6)</div>
 </div>
 
 <div class="modal" id="mDetail"><div class="box" id="dBox"></div></div>
-<div class="modal" id="mConfirm"><div class="box"><h2>삭제할까요?</h2><p id="cTxt"></p><div class="btns"><button id="cNo">취소</button><button class="del" id="cYes">삭제하기</button></div></div></div>
+<div class="modal" id="mConfirm"><div class="box"><h2>삭제할까요?</h2><p>이 기프티콘을 삭제해요. 되돌릴 수 없어요.</p><div class="btns"><button id="cNo">취소</button><button class="del" id="cYes">삭제하기</button></div></div></div>
 
 <script>
 const KEY='giftconBox.v1';
-let data=[],tab='avail',curId=null,imgData='';
+let data=[],tab='avail',curId=null;
+const busy=new Set();
 try{data=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){data=[]}
 const $=id=>document.getElementById(id);
 const won=n=>Math.round(n).toLocaleString('ko-KR');
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function msg(t,c){const m=$('msg');m.textContent=t;m.style.color=c||'#ef4444';clearTimeout(msg.t);msg.t=setTimeout(()=>{m.textContent=''},3500)}
+function st(t,c){const m=$('st');m.textContent=t;m.style.color=c||'#6b7280'}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){return false}}
 function dday(exp){
-  if(!exp)return{t:'기한 없음',c:'none',n:99999};
+  if(!exp)return{t:'유효기간 입력 필요',c:'none',n:99999};
   const a=new Date();a.setHours(0,0,0,0);const b=new Date(exp+'T00:00:00');
   const n=Math.round((b-a)/86400000);
   if(n<0)return{t:'만료 ('+(-n)+'일 지남)',c:'bad',n};
   if(n===0)return{t:'오늘까지',c:'soon',n};
   return{t:'D-'+n,c:n<=7?'soon':'ok',n};
 }
-function compress(file){return new Promise((res,rej)=>{
-  const r=new FileReader();
-  r.onerror=()=>rej();
-  r.onload=()=>{const im=new Image();im.onerror=()=>rej();im.onload=()=>{
-    const M=900;let w=im.width,h=im.height;const s=Math.min(1,M/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);
-    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);
-    res(c.toDataURL('image/jpeg',0.8));};im.src=r.result};
-  r.readAsDataURL(file);
-})}
-
 function loadScript(src){return new Promise((ok,no)=>{if(window.Tesseract)return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
-function toDataUrl(file,M){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.max(1,Math.min(3,M/im.width,6000/im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);try{x.filter='grayscale(1) contrast(1.5)'}catch(e){}x.imageSmoothingQuality='high';x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/png'))};im.src=r.result};r.readAsDataURL(file)})}
-const BRANDS=['스타벅스','메가커피','메가MGC커피','이디야','투썸플레이스','컴포즈커피','빽다방','할리스','탐앤탐스','공차','배스킨라빈스','베스킨라빈스','던킨','파리바게뜨','뚜레쥬르','맥도날드','롯데리아','버거킹','KFC','서브웨이','맘스터치','BBQ','교촌치킨','BHC','굽네치킨','도미노피자','피자헛','GS25','CU','세븐일레븐','이마트24','올리브영','다이소','CGV','롯데시네마','메가박스','배달의민족','쿠팡이츠','카카오톡','네이버페이','신세계','현대백화점','롯데백화점','이마트','홈플러스','노브랜드'];
-function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i];}for(let j=0;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
-function fuzzyBrand(line){
-  const s=line.replace(/\s/g,'').toUpperCase();if(s.length<3||s.length>24)return null;
-  for(const b of BRANDS){const B=b.toUpperCase().replace(/\s/g,'');
-    if(s.includes(B))return b;
-    if(B.length>=5&&s.startsWith(B.slice(0,2))&&s.endsWith(B.slice(-2))&&s.length<=B.length+3)return b;
-    if(B.length>=4){for(let L=B.length-1;L<=B.length+1;L++)for(let i=0;i+L<=s.length;i++){if(lev(s.slice(i,i+L),B)<=Math.floor(B.length*0.3))return b}}
-  }return null}
-function cleanName(n){
-  n=n.replace(/(상품|교환)(?!권)[^가-힣\d]{0,12}(?=\d+\s*[만천]?\s*원)/,'$1권 ');
-  n=n.replace(/(상품|교환)(?!권)\s*[가-힣]?[^가-힣\d]{0,12}(?=\d+\s*[만천]?\s*원)/,'$1권 ');
-  n=n.replace(/(\d사)(?=[가-힣A-Za-z])/g,'$1 ');
-  BRANDS.forEach(b=>{if(/[가-힣]$/.test(b))n=n.replace(new RegExp(b+'(?=[가-힣])','g'),b+' ')});
-  n=n.replace(/([가-힣])(\d+\s*[만천]?원)/g,'$1 $2').replace(/\s+/g,' ').trim();
-  return n;
-}
+function readImg(file){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>res(im);im.src=r.result};r.readAsDataURL(file)})}
+function draw(im,s,filter){const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);if(filter){try{x.filter=filter}catch(e){}}x.imageSmoothingQuality='high';x.drawImage(im,0,0,c.width,c.height);return c}
 function parseGift(raw){
-  const fix=s=>s.replace(/(^|[^A-Za-z0-9])(65|G5|6S|65S|GS5)(?=\s*\d?\s*사)/g,'$1GS ').replace(/([가-힣])[ \t]+(?=[가-힣])/g,'$1').replace(/[ \t]+/g,' ').trim();
-  const lines=raw.split(/\n/).map(fix).filter(Boolean);
-  const all=lines.join('\n');
-  const out={};
-  const re=/(20\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/g;
-  let ds=[],m;
+  const lines=raw.split(/\n/).map(s=>s.replace(/[ \t]+/g,' ').trim()).filter(Boolean);
+  const all=lines.join('\n');const out={};
+  const re=/(20\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/g;let ds=[],m;
   for(const ln of lines){re.lastIndex=0;while((m=re.exec(ln))){const mo=+m[2],d=+m[3];if(mo>=1&&mo<=12&&d>=1&&d<=31)ds.push({v:m[1]+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),k:/유효|까지|만료|기한/.test(ln)})}}
   if(ds.length){const k=ds.filter(x=>x.k);out.exp=(k.length?k[k.length-1]:ds.sort((a,b)=>a.v<b.v?-1:1)[ds.length-1]).v}
-  const flat=all.replace(/\s/g,'');
-  const lb=lines.find(l=>/교환처/.test(l));
-  if(lb){const t=lb.replace(/.*교환처\s*[:：]?\s*/,'').trim();if(t&&t.length<=20)out.brand=t}
-  if(!out.brand){for(const l of lines){const fb=fuzzyBrand(l);if(fb&&l.replace(/\s/g,'').length<=fb.length+6){out.brand=fb;out.brandLine=l;break}}}
-  if(!out.brand){const bs=BRANDS.filter(b=>flat.toUpperCase().includes(b.toUpperCase().replace(/\s/g,'')));if(/(^|[^A-Za-z])GS(?![A-Za-z0-9])/i.test(all)&&!bs.some(b=>/GS/i.test(b)))bs.unshift('GS25');if(bs.length)out.brand=bs.slice(0,4).join(', ')}
-  const pm=all.match(/(\d{1,3}(?:,\d{3})+)\s*원/);if(pm)out.price=+pm[1].replace(/,/g,'');
+  const pm=all.match(/(\d{1,3}(?:,\d{3})+)\s*원/);
+  if(pm)out.price=+pm[1].replace(/,/g,'');
   else{const mm=all.match(/(\d{1,3})\s*만\s*원/);if(mm)out.price=+mm[1]*10000;else{const cm=all.match(/(\d{1,3})\s*천\s*원/);if(cm)out.price=+cm[1]*1000}}
-  const nl=lines.find(l=>/상품명|상품/.test(l)&&/[:：]/.test(l));
-  if(nl){const t=nl.replace(/.*[:：]\s*/,'').trim();if(t)out.name=t}
-  if(!out.name){
-    const bad=/유효|교환처|주문번호|쿠폰|바코드|사용|기한|까지|만료|문의|고객|선물|보낸|받는|http|www|확인|안내|유의|환불|연장|교환|번호|\d{4}[.\-\/]/;
-    let c=lines.filter(l=>/[가-힣]{2,}/.test(l)&&!bad.test(l)&&l.length>=3&&l.length<=40&&l!==out.brand&&l!==out.brandLine&&!(fuzzyBrand(l)&&l.replace(/\s/g,'').length<=fuzzyBrand(l).length+6));const kw=c.filter(l=>/아메리카노|라떼|카페|커피|케이크|세트|치킨|버거|피자|아이스크림|음료|샌드위치|도넛|빵|콜라|상품권|교환권|쿠폰|\[/.test(l));if(kw.length)c=kw.concat(c.filter(l=>!kw.includes(l)));const pr=c.filter(l=>/상품권|교환권|쿠폰|통합|기프트/.test(l));if(pr.length)c=pr.concat(c.filter(l=>!pr.includes(l)));
-    if(c.length){let nm=c[0];const ix=lines.indexOf(nm);const nx=lines[ix+1];if(nx&&nx.length<=14&&/(권|쿠폰|상품|원)/.test(nx)&&!bad.test(nx))nm+=nx.startsWith('권')?nx:' '+nx;out.name=nm.trim()}
-  }
-  if(out.name)out.name=cleanName(out.name);
   return out;
 }
-async function autoFill(file){
-  const st=$('ocr');
-  try{
-    st.style.color='#6b7280';st.textContent='사진에서 글자를 읽는 중이에요... (처음에는 1분 정도 걸릴 수 있어요)';
-    await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
-    const url=await toDataUrl(file,2200);
-    const r=await Tesseract.recognize(url,'kor+eng',{logger:m=>{if(m.status==='recognizing text')st.textContent='글자 읽는 중... '+Math.round(m.progress*100)+'%'}});
-    const o=parseGift(r.data.text||'');
-    const got=[];
-    if(o.name&&!$('name').value.trim()){$('name').value=o.name;got.push('상품명')}
-    if(o.brand&&!$('brand').value.trim()){$('brand').value=o.brand;got.push('교환처')}
-    if(o.price&&!$('price').value){$('price').value=o.price;got.push('가격')}
-    if(o.exp&&!$('exp').value){$('exp').value=o.exp;got.push('유효기간')}
-    if(got.length){st.style.color='#16a34a';st.textContent='자동 입력: '+got.join(', ')+' (틀린 곳은 직접 고쳐 주세요)'}
-    else{st.style.color='#92400e';st.textContent='글자를 못 읽었어요. 직접 입력해 주세요.'}
-  }catch(e){st.style.color='#92400e';st.textContent='자동 입력에 실패했어요. 직접 입력해 주세요. (인터넷 연결 확인)'}
+async function ocr(im){
+  await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+  const s=Math.max(1,Math.min(3,2200/im.width,6000/im.height));
+  const url=draw(im,s,'grayscale(1) contrast(1.5)').toDataURL('image/png');
+  const r=await Tesseract.recognize(url,'kor+eng',{logger:m=>{if(m.status==='recognizing text')st('유효기간과 가격 읽는 중... '+Math.round(m.progress*100)+'%')}});
+  return parseGift(r.data.text||'');
 }
 $('img').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
-  try{imgData=await compress(f);$('prev').src=imgData;$('prev').style.display='block';$('fname').textContent=f.name}
-  catch(x){imgData='';msg('이미지를 불러오지 못했어요.');return}
-  autoFill(f);
-};
-$('addBtn').onclick=()=>{
-  const name=$('name').value.trim();
-  if(!imgData&&!name){msg('이미지나 상품명 중 하나는 입력해 주세요.');return}
-  const item={id:Date.now(),img:imgData,name:name||'(이름 없음)',brand:$('brand').value.trim(),price:+$('price').value||0,exp:$('exp').value,memo:$('memo').value.trim(),used:false};
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  let im,imgData;
+  try{im=await readImg(f);const k=Math.min(1,900/Math.max(im.width,im.height));imgData=draw(im,k).toDataURL('image/jpeg',0.8)}
+  catch(x){st('이미지를 불러오지 못했어요.','#ef4444');return}
+  const item={id:Date.now(),img:imgData,price:0,exp:'',used:false};
   data.push(item);
-  if(!save()){data.pop();msg('저장 공간이 부족해요. 안 쓰는 기프티콘을 삭제해 주세요.');return}
-  ['name','brand','price','exp','memo'].forEach(i=>$(i).value='');
-  $('img').value='';imgData='';$('prev').style.display='none';$('prev').src='';$('fname').textContent='선택 안 함';$('ocr').textContent='';
-  msg('등록했어요!','#16a34a');render();
+  if(!save()){data.pop();st('저장 공간이 부족해요. 안 쓰는 기프티콘을 삭제해 주세요.','#ef4444');return}
+  tab='avail';$('tAll').classList.add('on');$('tUsed').classList.remove('on');
+  busy.add(item.id);render();
+  st('등록했어요. 유효기간과 가격을 읽는 중이에요... (처음에는 1분 정도 걸릴 수 있어요)','#16a34a');
+  try{
+    const o=await ocr(im);
+    if(o.exp)item.exp=o.exp;if(o.price)item.price=o.price;save();
+    const got=[];if(o.exp)got.push('유효기간');if(o.price)got.push('가격');
+    if(got.length)st('자동 입력: '+got.join(', ')+' (틀렸으면 카드를 눌러 고쳐 주세요)','#16a34a');
+    else st('글자를 못 읽었어요. 카드를 눌러 직접 입력해 주세요.','#92400e');
+  }catch(x){st('자동 입력에 실패했어요. 카드를 눌러 직접 입력해 주세요. (인터넷 연결 확인)','#92400e')}
+  busy.delete(item.id);render();
 };
 $('tAll').onclick=()=>{tab='avail';$('tAll').classList.add('on');$('tUsed').classList.remove('on');render()};
 $('tUsed').onclick=()=>{tab='used';$('tUsed').classList.add('on');$('tAll').classList.remove('on');render()};
 function render(){
   const rows=data.filter(x=>tab==='used'?x.used:!x.used).sort((a,b)=>dday(a.exp).n-dday(b.exp).n||b.id-a.id);
   $('list').innerHTML=rows.length?rows.map(x=>{const d=dday(x.exp);
-    return '<div class="g" data-id="'+x.id+'"><div class="im">'+(x.img?'<img src="'+x.img+'" alt="">':'🎁')+(x.used?'<div class="used">사용 완료</div>':'')+'</div><div class="info"><div class="nm">'+esc(x.name)+'</div><div class="sub">'+esc(x.brand)+(x.brand&&x.price?' · ':'')+(x.price?won(x.price)+'원':'')+'</div>'+(x.used?'':'<span class="dd '+d.c+'">'+d.t+'</span>')+'</div></div>'}).join(''):'<div class="empty">'+(tab==='used'?'사용 완료한 기프티콘이 없어요':'등록된 기프티콘이 없어요')+'</div>';
+    return '<div class="g" data-id="'+x.id+'"><div class="im">'+(x.img?'<img src="'+x.img+'" alt="">':'🎁')+(x.used?'<div class="used">사용 완료</div>':'')+'</div><div class="info">'+(x.name?'<div style="font-size:12px;color:#6b7280">'+esc(x.name)+'</div>':'')+'<div class="sub">'+(busy.has(x.id)?'읽는 중...':(x.price?won(x.price)+'원':'가격 -'))+'</div>'+(x.used?'':'<span class="dd '+d.c+'">'+d.t+'</span>')+'</div></div>'}).join(''):'<div class="empty">'+(tab==='used'?'사용 완료한 기프티콘이 없어요':'등록된 기프티콘이 없어요')+'</div>';
   document.querySelectorAll('.g').forEach(g=>g.onclick=()=>openD(+g.dataset.id));
 }
 function openD(id){
   const x=data.find(v=>v.id===id);if(!x)return;curId=id;const d=dday(x.exp);
-  $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+'<h2>'+esc(x.name)+'</h2>'
-   +(x.brand?'<p>교환처: '+esc(x.brand)+'</p>':'')+(x.price?'<p>가격: '+won(x.price)+'원</p>':'')
-   +(x.exp?'<p>유효기간: '+esc(x.exp)+' <span class="dd '+d.c+'">'+d.t+'</span></p>':'')
-   +(x.memo?'<p style="white-space:pre-wrap">메모: '+esc(x.memo)+'</p>':'')
-   +'<div class="btns"><button id="bClose">닫기</button><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button><button class="del" id="bDel">삭제</button></div>';
+  $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+(x.name?'<h2>'+esc(x.name)+'</h2>':'')+(x.exp?'<p><span class="dd '+d.c+'">'+d.t+'</span></p>':'')
+   +'<div class="f"><label>가격 (원)</label><input type="number" id="eP" inputmode="numeric" value="'+(x.price||'')+'"></div>'
+   +'<div class="f"><label>유효기간</label><input type="date" id="eE" value="'+esc(x.exp||'')+'"></div>'
+   +'<div class="btns"><button class="sv" id="bSave">저장</button><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button></div>'
+   +'<div class="btns"><button id="bClose">닫기</button><button class="del" id="bDel">삭제</button></div>';
   $('mDetail').classList.add('show');
   $('bClose').onclick=closeD;
+  $('bSave').onclick=()=>{x.price=+$('eP').value||0;x.exp=$('eE').value;save();closeD();render();st('저장했어요.','#16a34a')};
   $('bUse').onclick=()=>{x.used=!x.used;save();closeD();render()};
-  $('bDel').onclick=()=>{$('cTxt').textContent='"'+x.name+'" 기프티콘을 삭제해요. 되돌릴 수 없어요.';$('mConfirm').classList.add('show')};
+  $('bDel').onclick=()=>{$('mConfirm').classList.add('show')};
 }
 function closeD(){$('mDetail').classList.remove('show');curId=null}
 $('cNo').onclick=()=>$('mConfirm').classList.remove('show');
