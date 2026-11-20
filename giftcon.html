@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>기프티콘 보관함</title>
 <style>
@@ -69,7 +70,7 @@ textarea{resize:vertical;min-height:50px}
 
   <div class="tabs"><button id="tAll" class="on">사용 가능</button><button id="tUsed">사용 완료</button></div>
   <div class="grid" id="list"></div>
-  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요.</div>
+  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요. (버전 v4)</div>
 </div>
 
 <div class="modal" id="mDetail"><div class="box" id="dBox"></div></div>
@@ -106,7 +107,8 @@ function loadScript(src){return new Promise((ok,no)=>{if(window.Tesseract)return
 function toDataUrl(file,M){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(3,M/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);try{x.filter='grayscale(1) contrast(1.5)'}catch(e){}x.imageSmoothingQuality='high';x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/png'))};im.src=r.result};r.readAsDataURL(file)})}
 const BRANDS=['스타벅스','메가커피','메가MGC커피','이디야','투썸플레이스','컴포즈커피','빽다방','할리스','탐앤탐스','공차','배스킨라빈스','베스킨라빈스','던킨','파리바게뜨','뚜레쥬르','맥도날드','롯데리아','버거킹','KFC','서브웨이','맘스터치','BBQ','교촌치킨','BHC','굽네치킨','도미노피자','피자헛','GS25','CU','세븐일레븐','이마트24','올리브영','다이소','CGV','롯데시네마','메가박스','배달의민족','쿠팡이츠','카카오톡','네이버페이','신세계','현대백화점','롯데백화점','이마트','홈플러스','노브랜드'];
 function cleanName(n){
-  n=n.replace(/(상품|교환)(?!권)[\s|A-Za-z!1Il]{0,8}(?=\d+\s*[만천]?\s*원)/,'$1권 ');
+  n=n.replace(/(상품|교환)(?!권)[^가-힣\d]{0,12}(?=\d+\s*[만천]?\s*원)/,'$1권 ');
+  n=n.replace(/(상품|교환)(?!권)\s*[가-힣]?[^가-힣\d]{0,12}(?=\d+\s*[만천]?\s*원)/,'$1권 ');
   n=n.replace(/(\d사)(?=[가-힣A-Za-z])/g,'$1 ');
   BRANDS.forEach(b=>{if(/[가-힣]$/.test(b))n=n.replace(new RegExp(b+'(?=[가-힣])','g'),b+' ')});
   n=n.replace(/([가-힣])(\d+\s*[만천]?원)/g,'$1 $2').replace(/\s+/g,' ').trim();
