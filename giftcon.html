@@ -127,12 +127,12 @@ function render(){
 }
 function openD(id){
   const x=data.find(v=>v.id===id);if(!x)return;curId=id;const d=dday(x.exp);
-  $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+(x.name?'<h2>'+esc(x.name)+'</h2>':'')+(x.exp?'<p>유효기간 '+esc(x.exp)+' <span class="dd '+d.c+'">'+d.t+'</span></p>':'')
+  $('dBox').innerHTML=(x.img?'<img id="dImg" src="'+x.img+'" alt="" style="cursor:pointer">':'')+(x.name?'<h2>'+esc(x.name)+'</h2>':'')+(x.exp?'<p>유효기간 '+esc(x.exp)+' <span class="dd '+d.c+'">'+d.t+'</span></p>':'')
    +'<div class="f"><label>📅 유효기간 수정 (눌러서 날짜 선택)</label><input type="date" id="eE" value="'+esc(x.exp||'')+'"></div>'
    +'<div class="btns"><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button></div>'
-   +'<div class="btns"><button id="bClose">닫기</button><button class="del" id="bDel">삭제</button></div>';
+   +'<div class="btns"><button class="del" id="bDel">삭제</button></div>';
   $('mDetail').classList.add('show');
-  $('bClose').onclick=closeD;
+  if($('dImg'))$('dImg').onclick=closeD;
   $('eE').onchange=()=>{x.exp=$('eE').value;save();closeD();render();st('유효기간을 '+(x.exp||'비움')+'(으)로 수정했어요.','#16a34a')};
   $('bUse').onclick=()=>{x.used=!x.used;save();closeD();render()};
   $('bDel').onclick=()=>{$('mConfirm').classList.add('show')};
