@@ -56,13 +56,12 @@ textarea{resize:vertical;min-height:50px}
   <div class="card">
     <div class="row">
       <div class="full"><label>기프티콘 이미지</label>
-        <div class="pick"><label class="btn" for="img">이미지 선택</label><input type="file" id="img" accept="image/*"><img id="prev" alt=""><span id="fname" style="font-size:12px;color:#6b7280">선택 안 함</span></div></div>
+        <div class="pick"><label class="btn" for="img">🖼️ 갤러리에서 사진 선택</label><input type="file" id="img" accept="image/*"><img id="prev" alt=""><span id="fname" style="font-size:12px;color:#6b7280">선택 안 함</span></div><div id="ocr" style="font-size:12px;margin-top:6px;color:#6b7280"></div></div>
       <div class="full"><label>상품명</label><input type="text" id="name" placeholder="예: 아메리카노 T"></div>
       <div><label>교환처 (브랜드)</label><input type="text" id="brand" placeholder="예: 스타벅스"></div>
       <div><label>가격 (원)</label><input type="number" id="price" inputmode="numeric"></div>
-      <div><label>유효기간</label><input type="date" id="exp"></div>
-      <div><label>보낸 사람</label><input type="text" id="from"></div>
-      <div class="full"><label>메모</label><textarea id="memo" placeholder="쿠폰번호, 사용 조건 등"></textarea></div>
+      <div class="full"><label>유효기간</label><input type="date" id="exp"></div>
+            <div class="full"><label>메모</label><textarea id="memo" placeholder="쿠폰번호, 사용 조건 등"></textarea></div>
     </div>
     <div id="msg"></div>
     <button class="add" id="addBtn">등록하기</button>
@@ -102,19 +101,64 @@ function compress(file){return new Promise((res,rej)=>{
     res(c.toDataURL('image/jpeg',0.8));};im.src=r.result};
   r.readAsDataURL(file);
 })}
+
+function loadScript(src){return new Promise((ok,no)=>{if(window.Tesseract)return ok();const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+function toDataUrl(file,M){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(1,M/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/png'))};im.src=r.result};r.readAsDataURL(file)})}
+const BRANDS=['스타벅스','메가커피','메가MGC커피','이디야','투썸플레이스','컴포즈커피','빽다방','할리스','탐앤탐스','공차','배스킨라빈스','베스킨라빈스','던킨','파리바게뜨','뚜레쥬르','맥도날드','롯데리아','버거킹','KFC','서브웨이','맘스터치','BBQ','교촌치킨','BHC','굽네치킨','도미노피자','피자헛','GS25','CU','세븐일레븐','이마트24','올리브영','다이소','CGV','롯데시네마','메가박스','배달의민족','쿠팡이츠','카카오톡','네이버페이','신세계','현대백화점','롯데백화점','이마트','홈플러스','노브랜드'];
+function parseGift(raw){
+  const fix=s=>s.replace(/([가-힣])[ \t]+(?=[가-힣])/g,'$1').replace(/[ \t]+/g,' ').trim();
+  const lines=raw.split(/\n/).map(fix).filter(Boolean);
+  const all=lines.join('\n');
+  const out={};
+  const re=/(20\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/g;
+  let ds=[],m;
+  for(const ln of lines){re.lastIndex=0;while((m=re.exec(ln))){const mo=+m[2],d=+m[3];if(mo>=1&&mo<=12&&d>=1&&d<=31)ds.push({v:m[1]+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),k:/유효|까지|만료|기한/.test(ln)})}}
+  if(ds.length){const k=ds.filter(x=>x.k);out.exp=(k.length?k[k.length-1]:ds.sort((a,b)=>a.v<b.v?-1:1)[ds.length-1]).v}
+  const flat=all.replace(/\s/g,'');
+  const lb=lines.find(l=>/교환처/.test(l));
+  if(lb){const t=lb.replace(/.*교환처\s*[:：]?\s*/,'').trim();if(t&&t.length<=20)out.brand=t}
+  if(!out.brand){const b=BRANDS.find(b=>flat.toUpperCase().includes(b.toUpperCase().replace(/\s/g,'')));if(b)out.brand=b}
+  const pm=all.match(/(\d{1,3}(?:,\d{3})+)\s*원/);if(pm)out.price=+pm[1].replace(/,/g,'');
+  const nl=lines.find(l=>/상품명|상품/.test(l)&&/[:：]/.test(l));
+  if(nl){const t=nl.replace(/.*[:：]\s*/,'').trim();if(t)out.name=t}
+  if(!out.name){
+    const bad=/유효|교환처|주문번호|쿠폰|바코드|사용|기한|까지|만료|문의|고객|선물|보낸|받는|http|www|확인|안내|유의|환불|연장|교환|번호|\d{4}[.\-\/]/;
+    const c=lines.filter(l=>/[가-힣]{2,}/.test(l)&&!bad.test(l)&&l.length>=3&&l.length<=30&&l!==out.brand);
+    if(c.length)out.name=c[0]
+  }
+  return out;
+}
+async function autoFill(file){
+  const st=$('ocr');
+  try{
+    st.style.color='#6b7280';st.textContent='사진에서 글자를 읽는 중이에요... (처음에는 1분 정도 걸릴 수 있어요)';
+    await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+    const url=await toDataUrl(file,1600);
+    const r=await Tesseract.recognize(url,'kor+eng',{logger:m=>{if(m.status==='recognizing text')st.textContent='글자 읽는 중... '+Math.round(m.progress*100)+'%'}});
+    const o=parseGift(r.data.text||'');
+    const got=[];
+    if(o.name&&!$('name').value.trim()){$('name').value=o.name;got.push('상품명')}
+    if(o.brand&&!$('brand').value.trim()){$('brand').value=o.brand;got.push('교환처')}
+    if(o.price&&!$('price').value){$('price').value=o.price;got.push('가격')}
+    if(o.exp&&!$('exp').value){$('exp').value=o.exp;got.push('유효기간')}
+    if(got.length){st.style.color='#16a34a';st.textContent='자동 입력: '+got.join(', ')+' (틀린 곳은 직접 고쳐 주세요)'}
+    else{st.style.color='#92400e';st.textContent='글자를 못 읽었어요. 직접 입력해 주세요.'}
+  }catch(e){st.style.color='#92400e';st.textContent='자동 입력에 실패했어요. 직접 입력해 주세요. (인터넷 연결 확인)'}
+}
 $('img').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;
   try{imgData=await compress(f);$('prev').src=imgData;$('prev').style.display='block';$('fname').textContent=f.name}
-  catch(x){imgData='';msg('이미지를 불러오지 못했어요.')}
+  catch(x){imgData='';msg('이미지를 불러오지 못했어요.');return}
+  autoFill(f);
 };
 $('addBtn').onclick=()=>{
   const name=$('name').value.trim();
   if(!imgData&&!name){msg('이미지나 상품명 중 하나는 입력해 주세요.');return}
-  const item={id:Date.now(),img:imgData,name:name||'(이름 없음)',brand:$('brand').value.trim(),price:+$('price').value||0,exp:$('exp').value,from:$('from').value.trim(),memo:$('memo').value.trim(),used:false};
+  const item={id:Date.now(),img:imgData,name:name||'(이름 없음)',brand:$('brand').value.trim(),price:+$('price').value||0,exp:$('exp').value,memo:$('memo').value.trim(),used:false};
   data.push(item);
   if(!save()){data.pop();msg('저장 공간이 부족해요. 안 쓰는 기프티콘을 삭제해 주세요.');return}
-  ['name','brand','price','exp','from','memo'].forEach(i=>$(i).value='');
-  $('img').value='';imgData='';$('prev').style.display='none';$('prev').src='';$('fname').textContent='선택 안 함';
+  ['name','brand','price','exp','memo'].forEach(i=>$(i).value='');
+  $('img').value='';imgData='';$('prev').style.display='none';$('prev').src='';$('fname').textContent='선택 안 함';$('ocr').textContent='';
   msg('등록했어요!','#16a34a');render();
 };
 $('tAll').onclick=()=>{tab='avail';$('tAll').classList.add('on');$('tUsed').classList.remove('on');render()};
@@ -130,7 +174,7 @@ function openD(id){
   $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+'<h2>'+esc(x.name)+'</h2>'
    +(x.brand?'<p>교환처: '+esc(x.brand)+'</p>':'')+(x.price?'<p>가격: '+won(x.price)+'원</p>':'')
    +(x.exp?'<p>유효기간: '+esc(x.exp)+' <span class="dd '+d.c+'">'+d.t+'</span></p>':'')
-   +(x.from?'<p>보낸 사람: '+esc(x.from)+'</p>':'')+(x.memo?'<p style="white-space:pre-wrap">메모: '+esc(x.memo)+'</p>':'')
+   +(x.memo?'<p style="white-space:pre-wrap">메모: '+esc(x.memo)+'</p>':'')
    +'<div class="btns"><button id="bClose">닫기</button><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button><button class="del" id="bDel">삭제</button></div>';
   $('mDetail').classList.add('show');
   $('bClose').onclick=closeD;
