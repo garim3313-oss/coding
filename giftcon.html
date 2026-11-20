@@ -21,16 +21,16 @@ input[type=number],input[type=date]{width:100%;padding:10px;border:1px solid #d1
 .tabs{display:flex;gap:8px;margin-bottom:10px}
 .tabs button{flex:1;padding:8px;border:1px solid #d1d5db;background:#fff;border-radius:8px;font-size:14px;cursor:pointer}
 .tabs button.on{background:#111827;color:#fff;border-color:#111827}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .g{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer}
 .g .im{width:100%;aspect-ratio:1/1;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden}
 .g .im img{width:100%;height:100%;object-fit:cover;object-position:top}
-.g .used{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
-.g .info{padding:8px 10px}
+.g .used{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.g .info{padding:6px 4px;text-align:center}
 .g .sub{font-size:13px;color:#374151;font-weight:700}
-.dd{display:inline-block;font-size:12px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:4px}
+.dd{display:inline-block;font-size:11px;font-weight:700;padding:2px 5px;border-radius:6px;white-space:nowrap}
 .ok{background:#dcfce7;color:#166534}.soon{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}.none{background:#e5e7eb;color:#374151}
-.empty{text-align:center;color:#9ca3af;padding:30px;grid-column:1/3}
+.empty{text-align:center;color:#9ca3af;padding:30px;grid-column:1/5}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
 .modal.show{display:flex}
 .box{background:#fff;border-radius:14px;padding:16px;width:100%;max-width:420px;max-height:92vh;overflow:auto}
@@ -51,12 +51,12 @@ input[type=number],input[type=date]{width:100%;padding:10px;border:1px solid #d1
 
   <div class="card">
     <div class="pick"><label class="btn" for="img">＋ 이미지 선택</label><input type="file" id="img" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></div>
-    <div id="st">사진을 고르면 바로 등록돼요. 유효기간과 가격은 자동으로 읽어요.</div>
+    <div id="st">사진을 고르면 바로 등록돼요. 유효기간은 자동으로 읽어요.</div>
   </div>
 
   <div class="tabs"><button id="tAll" class="on">사용 가능</button><button id="tUsed">사용 완료</button></div>
   <div class="grid" id="list"></div>
-  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요. (버전 v6)</div>
+  <div style="font-size:11px;color:#9ca3af;margin-top:12px">이 기기의 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요. 이미지는 용량을 줄여서 저장해요. (버전 v7)</div>
 </div>
 
 <div class="modal" id="mDetail"><div class="box" id="dBox"></div></div>
@@ -73,10 +73,10 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 function st(t,c){const m=$('st');m.textContent=t;m.style.color=c||'#6b7280'}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));return true}catch(e){return false}}
 function dday(exp){
-  if(!exp)return{t:'유효기간 입력 필요',c:'none',n:99999};
+  if(!exp)return{t:'기간 입력',c:'none',n:99999};
   const a=new Date();a.setHours(0,0,0,0);const b=new Date(exp+'T00:00:00');
   const n=Math.round((b-a)/86400000);
-  if(n<0)return{t:'만료 ('+(-n)+'일 지남)',c:'bad',n};
+  if(n<0)return{t:'만료',c:'bad',n};
   if(n===0)return{t:'오늘까지',c:'soon',n};
   return{t:'D-'+n,c:n<=7?'soon':'ok',n};
 }
@@ -89,16 +89,13 @@ function parseGift(raw){
   const re=/(20\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/g;let ds=[],m;
   for(const ln of lines){re.lastIndex=0;while((m=re.exec(ln))){const mo=+m[2],d=+m[3];if(mo>=1&&mo<=12&&d>=1&&d<=31)ds.push({v:m[1]+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),k:/유효|까지|만료|기한/.test(ln)})}}
   if(ds.length){const k=ds.filter(x=>x.k);out.exp=(k.length?k[k.length-1]:ds.sort((a,b)=>a.v<b.v?-1:1)[ds.length-1]).v}
-  const pm=all.match(/(\d{1,3}(?:,\d{3})+)\s*원/);
-  if(pm)out.price=+pm[1].replace(/,/g,'');
-  else{const mm=all.match(/(\d{1,3})\s*만\s*원/);if(mm)out.price=+mm[1]*10000;else{const cm=all.match(/(\d{1,3})\s*천\s*원/);if(cm)out.price=+cm[1]*1000}}
   return out;
 }
 async function ocr(im){
   await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
   const s=Math.max(1,Math.min(3,2200/im.width,6000/im.height));
   const url=draw(im,s,'grayscale(1) contrast(1.5)').toDataURL('image/png');
-  const r=await Tesseract.recognize(url,'kor+eng',{logger:m=>{if(m.status==='recognizing text')st('유효기간과 가격 읽는 중... '+Math.round(m.progress*100)+'%')}});
+  const r=await Tesseract.recognize(url,'kor+eng',{logger:m=>{if(m.status==='recognizing text')st('유효기간 읽는 중... '+Math.round(m.progress*100)+'%')}});
   return parseGift(r.data.text||'');
 }
 $('img').onchange=async e=>{
@@ -106,18 +103,17 @@ $('img').onchange=async e=>{
   let im,imgData;
   try{im=await readImg(f);const k=Math.min(1,900/Math.max(im.width,im.height));imgData=draw(im,k).toDataURL('image/jpeg',0.8)}
   catch(x){st('이미지를 불러오지 못했어요.','#ef4444');return}
-  const item={id:Date.now(),img:imgData,price:0,exp:'',used:false};
+  const item={id:Date.now(),img:imgData,exp:'',used:false};
   data.push(item);
   if(!save()){data.pop();st('저장 공간이 부족해요. 안 쓰는 기프티콘을 삭제해 주세요.','#ef4444');return}
   tab='avail';$('tAll').classList.add('on');$('tUsed').classList.remove('on');
   busy.add(item.id);render();
-  st('등록했어요. 유효기간과 가격을 읽는 중이에요... (처음에는 1분 정도 걸릴 수 있어요)','#16a34a');
+  st('등록했어요. 유효기간을 읽는 중이에요... (처음에는 1분 정도 걸릴 수 있어요)','#16a34a');
   try{
     const o=await ocr(im);
-    if(o.exp)item.exp=o.exp;if(o.price)item.price=o.price;save();
-    const got=[];if(o.exp)got.push('유효기간');if(o.price)got.push('가격');
-    if(got.length)st('자동 입력: '+got.join(', ')+' (틀렸으면 카드를 눌러 고쳐 주세요)','#16a34a');
-    else st('글자를 못 읽었어요. 카드를 눌러 직접 입력해 주세요.','#92400e');
+    if(o.exp)item.exp=o.exp;save();
+    if(o.exp)st('유효기간을 자동으로 입력했어요. (틀렸으면 카드를 눌러 고쳐 주세요)','#16a34a');
+    else st('유효기간을 못 읽었어요. 카드를 눌러 직접 입력해 주세요.','#92400e');
   }catch(x){st('자동 입력에 실패했어요. 카드를 눌러 직접 입력해 주세요. (인터넷 연결 확인)','#92400e')}
   busy.delete(item.id);render();
 };
@@ -126,19 +122,18 @@ $('tUsed').onclick=()=>{tab='used';$('tUsed').classList.add('on');$('tAll').clas
 function render(){
   const rows=data.filter(x=>tab==='used'?x.used:!x.used).sort((a,b)=>dday(a.exp).n-dday(b.exp).n||b.id-a.id);
   $('list').innerHTML=rows.length?rows.map(x=>{const d=dday(x.exp);
-    return '<div class="g" data-id="'+x.id+'"><div class="im">'+(x.img?'<img src="'+x.img+'" alt="">':'🎁')+(x.used?'<div class="used">사용 완료</div>':'')+'</div><div class="info">'+(x.name?'<div style="font-size:12px;color:#6b7280">'+esc(x.name)+'</div>':'')+'<div class="sub">'+(busy.has(x.id)?'읽는 중...':(x.price?won(x.price)+'원':'가격 -'))+'</div>'+(x.used?'':'<span class="dd '+d.c+'">'+d.t+'</span>')+'</div></div>'}).join(''):'<div class="empty">'+(tab==='used'?'사용 완료한 기프티콘이 없어요':'등록된 기프티콘이 없어요')+'</div>';
+    return '<div class="g" data-id="'+x.id+'"><div class="im">'+(x.img?'<img src="'+x.img+'" alt="">':'🎁')+(x.used?'<div class="used">사용 완료</div>':'')+'</div><div class="info">'+(x.name?'<div style="font-size:12px;color:#6b7280">'+esc(x.name)+'</div>':'')+(x.used?'':'<span class="dd '+(busy.has(x.id)?'none':d.c)+'">'+(busy.has(x.id)?'읽는 중':d.t)+'</span>')+'</div></div>'}).join(''):'<div class="empty">'+(tab==='used'?'사용 완료한 기프티콘이 없어요':'등록된 기프티콘이 없어요')+'</div>';
   document.querySelectorAll('.g').forEach(g=>g.onclick=()=>openD(+g.dataset.id));
 }
 function openD(id){
   const x=data.find(v=>v.id===id);if(!x)return;curId=id;const d=dday(x.exp);
-  $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+(x.name?'<h2>'+esc(x.name)+'</h2>':'')+(x.exp?'<p><span class="dd '+d.c+'">'+d.t+'</span></p>':'')
-   +'<div class="f"><label>가격 (원)</label><input type="number" id="eP" inputmode="numeric" value="'+(x.price||'')+'"></div>'
-   +'<div class="f"><label>유효기간</label><input type="date" id="eE" value="'+esc(x.exp||'')+'"></div>'
-   +'<div class="btns"><button class="sv" id="bSave">저장</button><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button></div>'
+  $('dBox').innerHTML=(x.img?'<img src="'+x.img+'" alt="">':'')+(x.name?'<h2>'+esc(x.name)+'</h2>':'')+(x.exp?'<p>유효기간 '+esc(x.exp)+' <span class="dd '+d.c+'">'+d.t+'</span></p>':'')
+   +'<div class="f"><label>📅 유효기간 수정 (눌러서 날짜 선택)</label><input type="date" id="eE" value="'+esc(x.exp||'')+'"></div>'
+   +'<div class="btns"><button class="use" id="bUse">'+(x.used?'사용 취소':'사용 완료')+'</button></div>'
    +'<div class="btns"><button id="bClose">닫기</button><button class="del" id="bDel">삭제</button></div>';
   $('mDetail').classList.add('show');
   $('bClose').onclick=closeD;
-  $('bSave').onclick=()=>{x.price=+$('eP').value||0;x.exp=$('eE').value;save();closeD();render();st('저장했어요.','#16a34a')};
+  $('eE').onchange=()=>{x.exp=$('eE').value;save();closeD();render();st('유효기간을 '+(x.exp||'비움')+'(으)로 수정했어요.','#16a34a')};
   $('bUse').onclick=()=>{x.used=!x.used;save();closeD();render()};
   $('bDel').onclick=()=>{$('mConfirm').classList.add('show')};
 }
